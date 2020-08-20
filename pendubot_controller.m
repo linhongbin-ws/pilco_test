@@ -7,12 +7,13 @@ classdef pendubot_controller
         timeNow
         
         %task param
-        dT_control = 0.002
-        dT_print = 0.02
+        dT_control = 0.01
+        dT_print = 0.05
         dT_plotter = 0.2
-        dT_PID = 0.01
+        dT_PID = 0.05
+        dT_Measure = 0.05;
         
-        
+        taskMeasure
         taskControl
         taskPlotter
         taskPrint
@@ -48,8 +49,8 @@ classdef pendubot_controller
         maxTor1 = 1
         maxTor2 = 1
         
-        maxVel1 = 10
-        maxVel2 = 10
+        maxVel1 = 20
+        maxVel2 = 20
 
         
         
@@ -86,6 +87,7 @@ classdef pendubot_controller
             
             % basic task that must run
             obj.taskControl =  mx_task(@()obj.task_control, obj.dT_control); 
+            obj.taskMeasure =  mx_task(@()obj.task_measure, obj.dT_Measure); 
             
             % alternative tasks
             if obj.isTaskPrinter
@@ -127,6 +129,7 @@ classdef pendubot_controller
             
             % basic task that must run
             obj.taskControl.run(obj.timeNow);
+            obj.taskMeasure.run(obj.timeNow);
             
             % alternative tasks
             if obj.isTaskPrinter
@@ -357,9 +360,12 @@ classdef pendubot_controller
         end
         
         function obj = task_control(obj)
+            obj.send_torque();
+        end
+        
+        function obj = task_measure(obj)
             obj.measurement();
             obj.updateSafeVelocity();
-            obj.send_torque();
             obj.record();
             
         end

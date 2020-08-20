@@ -36,8 +36,10 @@ mu0Sim = mu0Sim(dyno); S0Sim = S0Sim(dyno,dyno);
 
 % 3. Controlled learning (N iterations)
 for j = 1:N
+  tic
   trainDynModel;   % train (GP) dynamics model
   learnPolicy;     % learn policy
+  toc
   applyController; % apply controller to system
   disp(['controlled trial # ' num2str(j)]);
   if plotting.verbosity > 0;      % visualization of trajectory

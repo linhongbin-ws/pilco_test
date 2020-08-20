@@ -21,6 +21,7 @@
 %% Code
 
 warning('off','all'); 
+addpath(genpath('/home/ben/code/dw_foc'))
 
 % include some paths
 try
@@ -69,7 +70,7 @@ H = ceil(T/dt);                   % prediction steps (optimization horizon)
 mu0 = [0 0 pi pi]';               % initial state mean
 S0 = diag([0.1 0.1 0.01 0.01].^2);% initial state covariance
 N = 40;                           % no. of controller optimizations
-J = 1;                            % no. of init. training rollouts (of length H)
+J = 2;                            % no. of init. training rollouts (of length H)
 K = 1;                            % no. of init. states for which we optimize
 nc = 200;                         % size of controller training set
 
@@ -92,7 +93,7 @@ plant.prop = @propagated; % handle to function that propagates state over time
 % 4. Set up the policy structure
 policy.fcn = @(policy,m,s)conCat(@congp,@gSat,policy,m,s);% controller 
                                                           % representation
-policy.maxU = 3.5;                                        % max. amplitude of 
+policy.maxU = 2;                                        % max. amplitude of 
                                                           % torque
 [mm ss cc] = gTrig(mu0, S0, plant.angi);                  % represent angles 
 mm = [mu0; mm]; cc = S0*cc; ss = [S0 cc; cc' ss];         % in complex plane  
@@ -123,7 +124,7 @@ trainOpt = [300 500];                % defines the max. number of line searches
                                      % trainOpt(2): sparse GP (FITC)
 
 % 7. Parameters for policy optimization
-opt.length = 150;                        % max. number of line searches
+opt.length = 100;                        % max. number of line searches
 opt.MFEPLS = 20;                         % max. number of function evaluations
                                          % per line search
 opt.verbosity = 1;                       % verbosity: specifies how much 
